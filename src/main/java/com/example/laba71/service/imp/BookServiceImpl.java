@@ -1,7 +1,6 @@
 package com.example.laba71.service.imp;
 
 import com.example.laba71.dto.BookListItemDto;
-import com.example.laba71.mappers.BookMapper;
 import com.example.laba71.repository.BookRepository;
 import com.example.laba71.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookListItemDto> getBookList() {
-//        return bookRepository.findAll().stream().map(BookMapper::toListItem);
         return List.of();
     }
 }
