@@ -1,6 +1,6 @@
-package com.example.laba71.service.imp;
+package com.example.laba71.service.impl;
 
-import com.example.laba71.dto.RegistrationDto;
+import com.example.laba71.dto.user.RegistrationDto;
 import com.example.laba71.model.RoleName;
 import com.example.laba71.model.User;
 import com.example.laba71.repository.UserRepository;
@@ -54,7 +54,7 @@ public class UserServiceImp implements UserService {
         user.setPassportNumber(registrationDto.getPassportNumber());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         user.setLibraryCardNumber(UUID.randomUUID().toString().substring(0, 10));
-        user.setRole(RoleName.ROLE_READER);
+        user.setRoleName(RoleName.ROLE_READER);
         user.setEnabled(true);
         userRepository.save(user);
         log.info("Пользователь {} успешно зарегистрирован", registrationDto.getPassportNumber());

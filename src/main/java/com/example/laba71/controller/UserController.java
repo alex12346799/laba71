@@ -1,6 +1,6 @@
 package com.example.laba71.controller;
 
-import com.example.laba71.dto.RegistrationDto;
+import com.example.laba71.dto.user.RegistrationDto;
 import com.example.laba71.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
