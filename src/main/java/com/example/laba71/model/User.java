@@ -53,16 +53,19 @@ public class User implements UserDetails {
     private Boolean enabled;
 
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name ="role_name", nullable = false, length = 30)
-    private RoleName roleName;
+    private String roleName;
 
     @Column(name = "reset_password_token", length = 100)
     private String resetPasswordToken;
 
+    @OneToMany(mappedBy = "user")
+    private List<Loan> loans;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roleName.name()));
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
     @Override

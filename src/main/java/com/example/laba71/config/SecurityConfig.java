@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/**", "/").permitAll()
+                        .requestMatchers("/auth/profile/**").hasRole("USER_READER")
                 );
 
         return http.build();

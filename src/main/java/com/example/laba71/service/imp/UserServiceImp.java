@@ -1,6 +1,7 @@
 package com.example.laba71.service.imp;
 
-import com.example.laba71.dto.user.RegistrationDto;
+import com.example.laba71.dto.LoanViewDto;
+import com.example.laba71.dto.ProfileDto;
 import com.example.laba71.model.RoleName;
 import com.example.laba71.model.User;
 import com.example.laba71.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,7 +57,7 @@ public class UserServiceImp implements UserService {
         user.setPassportNumber(registrationDto.getPassportNumber());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         user.setLibraryCardNumber(UUID.randomUUID().toString().substring(0, 10));
-        user.setRoleName(RoleName.ROLE_READER);
+        user.setRoleName(RoleName.ROLE_READER.name());
         user.setEnabled(true);
         userRepository.save(user);
         log.info("Пользователь {} успешно зарегистрирован", registrationDto.getPassportNumber());
@@ -69,13 +72,51 @@ public class UserServiceImp implements UserService {
             User user = userOpt.get();
             return new UsernamePasswordAuthenticationToken(
                     user.getLibraryCardNumber(),
-                    null,
-                    user.getAuthorities()
+                    userOpt.get().getPassword()
             );
         }
         return null;
     }
 
+    @Override
+    public User findByLibraryCardNumber(String libraryCardNumber) {
+        return userRepository.findByLibraryCardNumber(libraryCardNumber).orElse(null);
+    }
+@Override
+public ProfileDto getProfile(String libraryCardNumber, LocalDate startDate, LocalDate endDate) {
+        User user = findByLibraryCardNumber(libraryCardNumber);
+        if (user == null) return null;
+
+        ProfileDto profileDto = ProfileDto.builder()
+                .readerName(user.getName())
+                .libraryCardNumber(user.getLibraryCardNumber())
+                .fromDate(startDate)
+                .toDate(endDate)
+                .build();
+
+        // Преобразуем займы
+        List<LoanViewDto> loans = user.getLoans() != null
+                ? user.getLoans().stream()
+                .map(loan -> LoanViewDto.builder()
+                        .loanId(loan.getId())
+                        .bookId(loan.getBook() != null ? loan.getBook().getId() : null)
+                        .title(loan.getBook() != null ? loan.getBook().getTitle() : null)
+                        .author(loan.getBook() != null ? loan.getBook().getAuthor() : null)
+                        .borrowDate(loan.getBorrowDate())
+                        .dueDate(loan.getDueDate())
+                        .returnedAt(loan.getReturnedAt())
+                        .status(loan.getStatus() != null ? loan.getStatus().name() : null)
+                        .build()
+                )
+                // Фильтруем по дате, если указано
+                .filter(loan -> (startDate == null || !loan.getBorrowDate().isBefore(startDate)) &&
+                        (endDate == null || !loan.getBorrowDate().isAfter(endDate)))
+                .toList()
+                : List.of();
+
+        profileDto.setLoans(loans);
+        return profileDto;
+    }
 
 }
 
