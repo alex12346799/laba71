@@ -54,16 +54,16 @@ public class User implements UserDetails {
     private Boolean enabled;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(name ="role_name", nullable = false, unique = true)
+    private RoleName roleName;
 
     @Column(name = "reset_password_token", length = 100)
     private String resetPasswordToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getName().name()));
+        return List.of(new SimpleGrantedAuthority(roleName.name()));
     }
 
     @Override
