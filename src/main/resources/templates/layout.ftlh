@@ -36,7 +36,6 @@
     </head>
     <body>
 
-    <!-- header -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
         <div class="container">
             <a class="navbar-brand fw-semibold" href="/">Литература</a>
@@ -44,11 +43,6 @@
                 <li class="nav-item"><a class="nav-link" href="/profile/books">Мои книги</a></li>
             </ul>
 
-            <!-- live user search -->
-<#--             <form class="d-none d-lg-flex me-2 search-wrap" role="search" onsubmit="return false;"> -->
-<#--                 <input id="userSearch" class="form-control" type="search" placeholder="Поиск пользователей…" autocomplete="off" aria-label="Search users"> -->
-<#--                 <div id="searchResults" class="list-group"></div> -->
-<#--             </form> -->
             <form class="d-none d-lg-flex me-2 search-wrap" role="search" onsubmit="return false;">
                 <input id="bookSearch" class="form-control" type="search"
                        placeholder="Поиск: название, автор или год…"
@@ -104,7 +98,7 @@
                 if (!q){ hide(); box.innerHTML=''; return; }
 
                 timer = setTimeout(async () => {
-                    const items = await searchBooks(q);  // ожидаем массив BookListItemDto
+                    const items = await searchBooks(q);
                     if (!items.length){
                         box.innerHTML = '<div class="list-group-item text-muted">Ничего не найдено</div>';
                         show(); return;
@@ -113,8 +107,7 @@
                     let html = '';
                     for (let i=0;i<items.length;i++){
                         const b = items[i];
-                        const href   = '/book/'+ b.id; // если есть страница книги; иначе можно на главную с фильтром
-                        // const imgSrc = b.imageUrl ? esc(b.imageUrl) : ('/api/image/'+b.id);
+                        const href   = '/book/'+ b.id;
                         const imgSrc = ('/api/image/'+b.id);
                         const title  = esc(b.title);
                         const author = esc(b.author ?? '');
