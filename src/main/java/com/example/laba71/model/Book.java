@@ -35,6 +35,9 @@ public class Book {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "publication_year")
+    private Integer publicationYear;
+
     @PositiveOrZero
     @Column(nullable = false)
     private Integer totalCopies;

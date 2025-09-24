@@ -18,6 +18,7 @@ public class BookListItemDto {
     private String author;
     private String imageUrl;
     private String categoryName;
+    private Integer publicationYear;
 
     private boolean available;
     private LocalDate expectedAvailableAt;

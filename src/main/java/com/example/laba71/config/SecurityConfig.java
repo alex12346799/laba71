@@ -29,14 +29,21 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/image/**").permitAll()
-                        .requestMatchers("/auth/register").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/**", "/").permitAll()
-                        .requestMatchers("/auth/profile/**").hasRole("USER_READER")
+                        .requestMatchers(
+                                "/", "/error",
+                                "/auth/login", "/auth/register",
+                                "/api/users/search",
+                                "/api/image/**",
+                                "/static/**", "/assets/**",
+                                "/css/**","/js/**","/img/**","/webjars/**",
+                                "/h2-console/**"
+                        ).permitAll()
+                        .requestMatchers("/profile/**").authenticated()
                         .anyRequest().authenticated()
-
-                );
+                )
+                        .exceptionHandling(ex -> ex
+                                .accessDeniedPage("/error")
+                        );
 
         return http.build();
     }
