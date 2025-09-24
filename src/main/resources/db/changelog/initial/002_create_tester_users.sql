@@ -1,2 +1,0 @@
-insert into USERS ( name, SURNAME, PATRONYMIC, ADDRESS, PASSPORT_NUMBER, LIBRARY_CARD_NUMBER, PASSWORD, ENABLED, ROLE_NAME )
-values ( 'qwe','qwe','qwe','qwe','123456789','qwe','qwe',true, 'ROLE_ADMIN');

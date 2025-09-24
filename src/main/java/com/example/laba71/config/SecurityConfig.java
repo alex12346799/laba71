@@ -29,9 +29,11 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/image/**").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/**", "/").permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
