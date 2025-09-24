@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/api/image/**",
                                 "/static/**", "/assets/**",
                                 "/css/**","/js/**","/img/**","/webjars/**",
-                                "/h2-console/**"
+                                "/h2-console/**",
+                                "/api/books/search"
                         ).permitAll()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().authenticated()

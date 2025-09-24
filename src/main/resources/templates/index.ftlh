@@ -110,7 +110,6 @@
         </section>
     </div>
 
-    <!-- JS для кнопки “Показать ещё” в категориях -->
     <script>
         (function(){
             const box = document.getElementById('catList');
