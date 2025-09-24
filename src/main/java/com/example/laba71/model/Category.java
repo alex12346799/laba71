@@ -19,6 +19,6 @@ public class Category {
     Long id;
 
     @NotBlank
-    @Column(nullable = false, unique = true, length = 120)
+    @Column(nullable = false, length = 120)
     private String name;
 }

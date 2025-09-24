@@ -3,8 +3,6 @@ package com.example.laba71.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,7 +53,7 @@ public class User implements UserDetails {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name ="role_name", nullable = false, unique = true)
+    @Column(name ="role_name", nullable = false, length = 30)
     private RoleName roleName;
 
     @Column(name = "reset_password_token", length = 100)
@@ -88,6 +86,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return Boolean.TRUE.equals(enabled);
     }
 }

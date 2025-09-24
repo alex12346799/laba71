@@ -1,0 +1,327 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1758697274178-1
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_book
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: title
+                  type: VARCHAR(200)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: author
+                  type: VARCHAR(200)
+              - column:
+                  name: image_url
+                  type: VARCHAR(512)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: category_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: total_copies
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: available_copies
+                  type: INT
+            tableName: book
+  - changeSet:
+      id: 1758697274178-2
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_category
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(120)
+            tableName: category
+  - changeSet:
+      id: 1758697274178-3
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_loan
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: book_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: borrow_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: due_date
+                  type: DATE
+              - column:
+                  name: returned_at
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(20)
+            tableName: loan
+  - changeSet:
+      id: 1758697274178-4
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_users
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: surname
+                  type: VARCHAR(255)
+              - column:
+                  name: patronymic
+                  type: VARCHAR(255)
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: passport_number
+                  type: VARCHAR(20)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: library_card_number
+                  type: VARCHAR(20)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  constraints:
+                    nullable: false
+                  name: role_name
+                  type: VARCHAR(30)
+              - column:
+                  name: reset_password_token
+                  type: VARCHAR(100)
+            tableName: users
+  - changeSet:
+      id: 1758697274178-5
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: library_card_number
+            constraintName: uc_users_library_card_number
+            tableName: users
+  - changeSet:
+      id: 1758697274178-6
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: passport_number
+            constraintName: uc_users_passport_number
+            tableName: users
+  - changeSet:
+      id: 1758697274178-7
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: author
+            indexName: ix_book_author
+            tableName: book
+  - changeSet:
+      id: 1758697274178-8
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: title
+            indexName: ix_book_title
+            tableName: book
+  - changeSet:
+      id: 1758697274178-10
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: due_date
+            indexName: ix_loan_due
+            tableName: loan
+  - changeSet:
+      id: 1758697274178-12
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+            indexName: ux_category_name
+            tableName: category
+            unique: true
+  - changeSet:
+      id: 1758697274178-13
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: category_id
+            baseTableName: book
+            constraintName: FK_BOOK_ON_CATEGORY
+            referencedColumnNames: id
+            referencedTableName: category
+  - changeSet:
+      id: 1758697274178-14
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: book_id
+            baseTableName: loan
+            constraintName: FK_LOAN_ON_BOOK
+            referencedColumnNames: id
+            referencedTableName: book
+        - createIndex:
+            columns:
+              - column:
+                  name: book_id
+            indexName: ix_loan_book
+            tableName: loan
+  - changeSet:
+      id: 1758697274178-15
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: loan
+            constraintName: FK_LOAN_ON_USER
+            referencedColumnNames: id
+            referencedTableName: users
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: ix_loan_user
+            tableName: loan
+
+  - changeSet:
+      id: 1758698001-book-available-check
+      author: eltur
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE book
+              ADD CONSTRAINT ck_book_available
+              CHECK (available_copies BETWEEN 0 AND total_copies);
+
+  - changeSet:
+      id: 1758698002-fk-modes
+      author: eltur
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: book
+            constraintName: FK_BOOK_ON_CATEGORY
+        - addForeignKeyConstraint:
+            baseTableName: book
+            baseColumnNames: category_id
+            referencedTableName: category
+            referencedColumnNames: id
+            constraintName: FK_BOOK_ON_CATEGORY
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+
+        - dropForeignKeyConstraint:
+            baseTableName: loan
+            constraintName: FK_LOAN_ON_BOOK
+        - addForeignKeyConstraint:
+            baseTableName: loan
+            baseColumnNames: book_id
+            referencedTableName: book
+            referencedColumnNames: id
+            constraintName: FK_LOAN_ON_BOOK
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+
+        - dropForeignKeyConstraint:
+            baseTableName: loan
+            constraintName: FK_LOAN_ON_USER
+        - addForeignKeyConstraint:
+            baseTableName: loan
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: FK_LOAN_ON_USER
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
