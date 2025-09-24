@@ -37,8 +37,8 @@ public class MainController {
             Model model
     ) {
         var pageable = switch (sort) {
-            case "yearAsc"  -> PageRequest.of(page, size, Sort.by("year").ascending().and(Sort.by("title").ascending()));
-            case "yearDesc" -> PageRequest.of(page, size, Sort.by("year").descending().and(Sort.by("title").ascending()));
+            case "yearAsc"  -> PageRequest.of(page, size, Sort.by("publicationYear").ascending().and(Sort.by("title").ascending()));
+            case "yearDesc" -> PageRequest.of(page, size, Sort.by("publicationYear").descending().and(Sort.by("title").ascending()));
             default         -> PageRequest.of(page, size, Sort.by("title").ascending());
         };
 

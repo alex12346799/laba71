@@ -83,10 +83,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
              join fetch b.category c
            where (:categoryId is null or c.id = :categoryId)
              and (:q is null or lower(b.title) like lower(concat('%', :q, '%')) or lower(b.author) like lower(concat('%', :q, '%')))
-             and (:year is null or b.publicationYear = :year)
+             and (:publicationYear is null or b.publicationYear = :publicationYear)
            """)
     Page<Book> search(@Param("q") String q,
-                      @Param("year") Integer year,
+                      @Param("publicationYear") Integer year,
                       @Param("categoryId") Long categoryId,
                       Pageable pageable);
 }

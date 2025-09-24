@@ -9,7 +9,8 @@
         </div>
         <div class="col-sm-2">
             <input name="year" value="${(year)!}" class="form-control" placeholder="Год"
-                   inputmode="numeric" pattern="\\d{4}">
+                   inputmode="numeric" pattern="[0-9]{4}">
+
         </div>
         <div class="col-sm-3">
             <select name="sort" class="form-select">
@@ -39,7 +40,7 @@
                             ${category.name}
                         </a>
                     </#list>
-                    <#if categories?size > 10>
+                    <#if categories?? && (categories?size > 10)>
                         <button id="catMore" type="button" class="list-group-item list-group-item-action text-center">
                             Показать ещё
                         </button>
@@ -79,7 +80,7 @@
             <#assign totalPages = (pageDto.totalPages!0)>
             <#assign isLast     = (pageDto.last!true)>
 
-            <#if totalPages > 1>
+            <#if pageDto?? && pageDto.totalPages?? && (pageDto.totalPages > 1)>
                 <#assign prevPage = (curPage > 0)?then(curPage - 1, 0)>
                 <#assign nextPage = (curPage < totalPages - 1)?then(curPage + 1, curPage)>
 
