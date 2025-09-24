@@ -1,81 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
+<#import "layout.ftlh" as main>
 
-<head>
-    <meta charset="UTF-8" />
-    <title>Литература — Главная</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons (опционально) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<@main.layout>
 
-    <style>
-        body {
-            background-color: #f7f7f9;
-        }
-
-        .genre-sidebar {
-            position: sticky;
-            top: 1rem;
-        }
-
-        .book-card img {
-            object-fit: cover;
-            width: 100%;
-            height: 140px;
-            background: #e9ecef;
-        }
-
-        .status-warn {
-            color: #0d6efd;
-            text-decoration: none;
-        }
-
-        .status-warn:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-
-<body>
-
-<!-- top bar -->
-<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
-    <div class="container">
-        <a class="navbar-brand fw-semibold" href="/">Литература</a>
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/profile/books">Мои книги</a>
-            </li>
-        </ul>
-
-        <form class="d-none d-lg-flex me-2" role="search" style="min-width: 320px;">
-            <input class="form-control" type="search" placeholder="Поиск по книгам, авторам…" aria-label="Search">
-        </form>
-
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="/auth/login">Авторизация</a>
-            <a class="btn btn-primary" href="/auth/register">Регистрация</a>
-        </div>
-    </div>
-</nav>
-
-<main class="container my-4">
     <div class="row g-4">
         <!-- Sidebar: Жанры -->
         <aside class="col-12 col-lg-3">
             <div class="card genre-sidebar">
                 <div class="card-header fw-semibold">Жанры</div>
                 <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action active">Все</a>
-                    <#list categories as category>
-                        <a href="?category=${category.id}" class="list-group-item list-group-item-action">${category.name}</a>
-
-                    </#list>
-                    <#-- 					<a href="#" class="list-group-item list-group-item-action">Религия</a> -->
-                    <#-- 					<a href="#" class="list-group-item list-group-item-action">Детские</a> -->
-                    <#-- 					<a href="#" class="list-group-item list-group-item-action">Проза</a> -->
+                    <a href="/" class="list-group-item list-group-item-action ${((param.category)??)?string('','active')}">Все</a>
+                    <#if categories?? && (categories?size > 0)>
+                        <#list categories as category>
+                            <a href="?category=${category.id}" class="list-group-item list-group-item-action">
+                                ${category.name}
+                            </a>
+                        </#list>
+                    </#if>
                 </div>
             </div>
         </aside>
@@ -83,100 +23,29 @@
         <!-- Content: Карточки книг -->
         <section class="col-12 col-lg-9">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
-
-                <#list bookList as book>
-
-                    <div class="col">
-                        <div class="card h-100 book-card shadow-sm">
-                            <img src="/api/image/${book.id}" alt="${book.title}">
-                            <div class="card-body">
-                                <h6 class="card-subtitle text-body-secondary mb-1"> ${book.author}</h6>
-                                <h5 class="card-title">«${book.title}»</h5>
-                                <div class="d-grid mt-3">
-                                    <button class="btn btn-outline-primary">
-                                        <i class="bi bi-box-arrow-in-down"></i> Получить
-                                    </button>
+                <#if bookList?? && (bookList?size > 0)>
+                    <#list bookList as book>
+                        <div class="col">
+                            <div class="card h-100 book-card shadow-sm">
+                                <img src="/api/image/${book.id}" alt="${book.title}">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle text-body-secondary mb-1">${book.author}</h6>
+                                    <h5 class="card-title">«${book.title}»</h5>
+                                    <div class="d-grid mt-3">
+                                        <button class="btn btn-outline-primary">
+                                            <i class="bi bi-box-arrow-in-down"></i> Получить
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </#list>
-
-                <#-- 				<!-- Книга доступна &ndash;&gt; -->
-                <#-- 				<div class="col"> -->
-                <#-- 					<div class="card h-100 book-card shadow-sm"> -->
-                <#-- 						<img src="" alt="Превью обложки"> -->
-                <#-- 						<div class="card-body"> -->
-                <#-- 							<h6 class="card-subtitle text-body-secondary mb-1">М. А. Булгаков</h6> -->
-                <#-- 							<h5 class="card-title">«Мастер и Маргарита»</h5> -->
-                <#-- 							<div class="d-grid mt-3"> -->
-                <#-- 								<button class="btn btn-outline-primary"> -->
-                <#-- 									<i class="bi bi-box-arrow-in-down"></i> Получить -->
-                <#-- 								</button> -->
-                <#-- 							</div> -->
-                <#-- 						</div> -->
-                <#-- 					</div> -->
-                <#-- 				</div> -->
-
-                <#-- 				<!-- Книга недоступна (ожидается к дате) &ndash;&gt; -->
-                <#-- 				<div class="col"> -->
-                <#-- 					<div class="card h-100 book-card shadow-sm"> -->
-                <#-- 						<img src="" alt="Превью обложки"> -->
-                <#-- 						<div class="card-body"> -->
-                <#-- 							<h6 class="card-subtitle text-body-secondary mb-1">М. А. Булгаков</h6> -->
-                <#-- 							<h5 class="card-title">«Мастер и Маргарита»</h5> -->
-                <#-- 							<div class="mt-3"> -->
-                <#-- 								<a href="#" class="status-warn small">Ожидается к</a> -->
-                <#-- 								<div class="small text-body-secondary">05/11/2020</div> -->
-                <#-- 							</div> -->
-                <#-- 						</div> -->
-                <#-- 					</div> -->
-                <#-- 				</div> -->
-
-                <#-- 				<!-- Примеры дополнительных карточек — продублированы для сетки &ndash;&gt; -->
-                <#-- 				<div class="col"> -->
-                <#-- 					<div class="card h-100 book-card shadow-sm"> -->
-                <#-- 						<img src="" alt="Превью обложки"> -->
-                <#-- 						<div class="card-body"> -->
-                <#-- 							<h6 class="card-subtitle text-body-secondary mb-1">М. А. Булгаков</h6> -->
-                <#-- 							<h5 class="card-title">«Мастер и Маргарита»</h5> -->
-                <#-- 							<div class="d-grid mt-3"> -->
-                <#-- 								<button class="btn btn-outline-primary">Получить</button> -->
-                <#-- 							</div> -->
-                <#-- 						</div> -->
-                <#-- 					</div> -->
-                <#-- 				</div> -->
-
-                <#-- 				<div class="col"> -->
-                <#-- 					<div class="card h-100 book-card shadow-sm"> -->
-                <#-- 						<img src="" alt="Превью обложки"> -->
-                <#-- 						<div class="card-body"> -->
-                <#-- 							<h6 class="card-subtitle text-body-secondary mb-1">М. А. Булгаков</h6> -->
-                <#-- 							<h5 class="card-title">«Мастер и Маргарита»</h5> -->
-                <#-- 							<div class="mt-3"> -->
-                <#-- 								<a href="#" class="status-warn small">Ожидается к</a> -->
-                <#-- 								<div class="small text-body-secondary">05/11/2020</div> -->
-                <#-- 							</div> -->
-                <#-- 						</div> -->
-                <#-- 					</div> -->
-                <#-- 				</div> -->
-
-                <#-- 				<div class="col"> -->
-                <#-- 					<div class="card h-100 book-card shadow-sm"> -->
-                <#-- 						<img src="" alt="Превью обложки"> -->
-                <#-- 						<div class="card-body"> -->
-                <#-- 							<h6 class="card-subtitle text-body-secondary mb-1">М. А. Булгаков</h6> -->
-                <#-- 							<h5 class="card-title">«Мастер и Маргарита»</h5> -->
-                <#-- 							<div class="d-grid mt-3"> -->
-                <#-- 								<button class="btn btn-outline-primary">Получить</button> -->
-                <#-- 							</div> -->
-                <#-- 						</div> -->
-                <#-- 					</div> -->
-                <#-- 				</div> -->
-
+                    </#list>
+                <#else>
+                    <div class="col"><div class="alert alert-secondary">Книг не найдено</div></div>
+                </#if>
             </div>
 
-            <!-- Пагинация -->
+            <!-- Пагинация (заглушка) -->
             <nav class="mt-4" aria-label="Навигация страниц">
                 <ul class="pagination justify-content-center">
                     <li class="page-item disabled"><span class="page-link">Назад</span></li>
@@ -188,15 +57,5 @@
             </nav>
         </section>
     </div>
-</main>
 
-<footer class="py-4 border-top bg-white">
-    <div class="container small text-muted">
-        © Библиотека, 2025
-    </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+</@main.layout>

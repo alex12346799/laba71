@@ -17,7 +17,7 @@ public class BookMapper {
                 .imageUrl(book.getImageUrl())
                 .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
                 .available(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
-                .expectedAvailableAt(null) // если нужно — вычисляй из Loans
+                .expectedAvailableAt(null) // если нужно — вычисляем из Loans
                 .build();
     }
 
