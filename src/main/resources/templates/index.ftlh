@@ -32,10 +32,20 @@
                                     <h6 class="card-subtitle text-body-secondary mb-1">${book.author}</h6>
                                     <h5 class="card-title">«${book.title}»</h5>
                                     <div class="d-grid mt-3">
-                                        <button class="btn btn-outline-primary">
-                                            <i class="bi bi-box-arrow-in-down"></i> Получить
-                                        </button>
+
+                                        <form action="/books/${book.id}/borrow" method="post">
+                                            <#if _csrf??>
+                                                <input
+                                                        type="hidden"
+                                                        name="${(_csrf.parameterName)!'csrf-param-name'}"
+                                                        value="${(_csrf.token)!'csrf-token'}"/>
+                                            </#if>
+                                            <button type="submit" class="btn btn-outline-primary">
+                                                <i class="bi bi-box-arrow-in-down"></i> Получить
+                                            </button>
+                                        </form>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

@@ -61,11 +61,13 @@
                         <td>
                             <#if loan.returnedAt??>
                                 <span class="badge bg-success">Возвращено</span>
-                            <#elseif loan.dueDate?? && loan.dueDate < .now>
+                            <#elseif loan.dueDateAsDate?? && (loan.dueDateAsDate <= .now?date)>
                                 <span class="badge bg-danger">Просрочено</span>
                             <#else>
                                 <span class="badge bg-warning text-dark">Ожидается</span>
                             </#if>
+
+
                         </td>
                     </tr>
                 </#list>

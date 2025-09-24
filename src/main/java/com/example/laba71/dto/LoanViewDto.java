@@ -3,6 +3,7 @@ package com.example.laba71.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,4 +21,8 @@ public class LoanViewDto {
     private LocalDate returnedAt;
 
     private String status;
+
+    public Date getDueDateAsDate() {
+        return java.sql.Date.valueOf(dueDate);
+    }
 }

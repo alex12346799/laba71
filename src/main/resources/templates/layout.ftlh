@@ -24,7 +24,7 @@
         <div class="container">
             <a class="navbar-brand fw-semibold" href="/">Литература</a>
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="/profile/books">Мои книги</a></li>
+                <li class="nav-item"><a class="nav-link" href="/auth/profile">Мои книги</a></li>
             </ul>
 
             <form class="d-none d-lg-flex me-2" role="search" style="min-width:320px;">
