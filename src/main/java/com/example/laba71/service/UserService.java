@@ -1,4 +1,11 @@
 package com.example.laba71.service;
 
-public class UserService {
+import com.example.laba71.dto.RegistrationDto;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface UserService extends UserDetailsService {
+    String register(RegistrationDto registrationDto);
+
+    Authentication authenticate(String libraryCardNumber, String rawPassword);
 }
