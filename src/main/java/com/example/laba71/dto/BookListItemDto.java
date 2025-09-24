@@ -4,8 +4,11 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+/**
+ * DTO for {@link com.example.laba71.model.Book}
+ */
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
