@@ -1,4 +1,4 @@
-package com.example.laba71.dto;
+package com.example.laba71.dto.user;
 
 
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@PasswordMatches
 public class RegistrationDto {
     private String name;
 
@@ -25,7 +26,7 @@ public class RegistrationDto {
     private String passportNumber;
 
     @NotBlank(message = "Пароль обязателен")
-    @Size(min = 6, message = "Пароль должен содержать минимум 6 символов")
+    @Size(min = 6, message = "Пароль должен содержать минимум 6 символов",max = 100)
     private String password;
 
     @NotBlank(message = "Подтверждение пароля обязательно")

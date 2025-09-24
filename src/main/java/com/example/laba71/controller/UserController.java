@@ -1,6 +1,7 @@
 package com.example.laba71.controller;
 
-import com.example.laba71.dto.RegistrationDto;
+
+import com.example.laba71.dto.user.RegistrationDto;
 import com.example.laba71.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -22,17 +23,17 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("registrationDto", new RegistrationDto());
-        return "register";
+        model.addAttribute("registrationDto", new com.example.laba71.dto.user.RegistrationDto());
+        return "auth/register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute RegistrationDto registrationDto,
+    public String registerUser(@Valid @ModelAttribute com.example.laba71.dto.user.RegistrationDto registrationDto,
                                BindingResult bindingResult,
                                Model model) {
 
         if (bindingResult.hasErrors()) {
-            return "register";
+            return "auth/register";
         }
 
         String result = userService.register(registrationDto);
@@ -40,16 +41,17 @@ public class UserController {
         if ("Пользователь успешно зарегистрирован!".equals(result)) {
             log.info("Регистрация успешна: {}", registrationDto.getPassportNumber());
             model.addAttribute("successMessage", result);
-            return "login";
+            return "auth/login";
         } else {
             model.addAttribute("errorMessage", result);
-            return "register";
+            return "auth/register";
         }
     }
 
     @GetMapping("/login")
-    public String showLoginForm() {
-        return "login";
+    public String showLoginForm(Model model) {
+        model.addAttribute("error", "Неверный логин или пароль");
+        return "auth/login";
     }
 
     @PostMapping("/login")
@@ -64,7 +66,7 @@ public class UserController {
             return "redirect:/";
         } else {
             model.addAttribute("errorMessage", "Неверный логин или пароль");
-            return "login";
+            return "auth/login";
         }
     }
 
