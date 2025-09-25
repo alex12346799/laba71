@@ -53,7 +53,7 @@
             <div class="d-flex gap-2">
                 <#if (currentUser)??>
                     <span class="navbar-text me-2 small text-muted">${currentUser}</span>
-                    <a class="btn btn-outline-secondary" href="/auth/logout">Выйти</a>
+                    <a class="btn btn-outline-secondary" href="/logout">Выйти</a>
                 <#else>
                     <a class="btn btn-outline-secondary" href="/auth/login">Авторизация</a>
                     <a class="btn btn-primary" href="/auth/register">Регистрация</a>

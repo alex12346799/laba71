@@ -20,4 +20,6 @@ public class LoanViewDto {
     private LocalDate returnedAt;
 
     private String status;
+    private String readerName;
+    private String libraryCardNumber;
 }

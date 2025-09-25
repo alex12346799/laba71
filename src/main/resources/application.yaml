@@ -11,6 +11,12 @@ spring:
 
 server:
   port: 9876
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
+    include-message: always
+    include-binding-errors: always
 
 logging:
   level:
