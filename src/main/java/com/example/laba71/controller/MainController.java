@@ -20,20 +20,13 @@ public class MainController {
     private final CategoryService categoryService;
 
     @GetMapping
-//    public String index(@RequestParam(required = false) Long category,
-//                        @RequestParam(required = false) String q,
-//                        @RequestParam(required = false) Integer year,
-//                        @RequestParam(required = false, defaultValue = "") String sort,
-//                        @RequestParam(defaultValue = "0") int page,
-//                        @RequestParam(defaultValue = "12") int size,
-//                        Model model@GetMapping("/")
     public String index(
             @RequestParam(required = false) Long category,
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false, defaultValue = "") String sort,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "9") int size,
             Model model
     ) {
         var pageable = switch (sort) {
