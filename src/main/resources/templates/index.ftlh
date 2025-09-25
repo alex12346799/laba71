@@ -66,21 +66,7 @@
                                         <button class="btn btn-outline-primary">
                                             <i class="bi bi-box-arrow-in-down"></i> Получить
                                         </button>
-                                    <div class="d-grid mt-3">
-
-                                        <form action="/books/${book.id}/borrow" method="post">
-                                            <#if _csrf??>
-                                                <input
-                                                        type="hidden"
-                                                        name="${(_csrf.parameterName)!'csrf-param-name'}"
-                                                        value="${(_csrf.token)!'csrf-token'}"/>
-                                            </#if>
-                                            <button type="submit" class="btn btn-outline-primary">
-                                                <i class="bi bi-box-arrow-in-down"></i> Получить
-                                            </button>
-                                        </form>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
