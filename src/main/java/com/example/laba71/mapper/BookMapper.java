@@ -9,15 +9,26 @@ import java.time.LocalDate;
 
 @Component
 public class BookMapper {
-    public BookListItemDto toDto(Book book) {
+
+    public BookListItemDto toListItemDto(Book book) {
+        return toListItemDto(book, null);
+    }
+
+
+    public BookListItemDto toListItemDto(Book book, LocalDate expectedAvailableAt) {
+        boolean available = book.getAvailableCopies() != null && book.getAvailableCopies() > 0;
+
         return BookListItemDto.builder()
                 .id(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .imageUrl(book.getImageUrl())
+                .publicationYear(book.getPublicationYear())
                 .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
-                .available(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
-                .expectedAvailableAt(null) // если нужно — вычисляем из Loans
+                .available(available)
+                .totalCopies(book.getTotalCopies())
+                .availableCopies(book.getAvailableCopies())
+                .expectedAvailableAt(expectedAvailableAt)
                 .build();
     }
 
@@ -27,6 +38,7 @@ public class BookMapper {
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .imageUrl(book.getImageUrl())
+                .publicationYear(book.getPublicationYear())
                 .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
                 .available(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
                 .expectedAvailableAt(expectedAvailableAt)

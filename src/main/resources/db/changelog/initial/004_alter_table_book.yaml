@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1758720446006-1
+      author: eltur
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: publication_year
+                  type: INT
+            tableName: book
+
