@@ -55,12 +55,14 @@
                 <#if pageDto.content?? && (pageDto.content?size > 0)>
                     <#list pageDto.content as book>
                         <div class="col">
-                            <div class="card h-100 book-card shadow-sm">
+                            <div class="card h-100 book-card shadow-sm d-flex flex-column">
                                 <img src="/api/image/${book.id}" alt="${book.title}">
-                                <div class="card-body">
+                                <div class="card-body flex-grow-1">
                                     <h6 class="card-subtitle text-body-secondary mb-1">${book.author}</h6>
                                     <h5 class="card-title">«${book.title}»</h5>
-                                    <div class="d-grid mt-3">
+                                </div>
+                                <div class="card-footer bg-transparent border-0 mt-auto">
+                                    <div class="d-grid">
                                         <button class="btn btn-outline-primary">
                                             <i class="bi bi-box-arrow-in-down"></i> Получить
                                         </button>

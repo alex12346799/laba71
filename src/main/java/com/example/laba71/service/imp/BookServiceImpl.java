@@ -3,6 +3,8 @@ package com.example.laba71.service.imp;
 import com.example.laba71.dto.BookListItemDto;
 import com.example.laba71.dto.PageDto;
 import com.example.laba71.mapper.BookMapper;
+import com.example.laba71.model.Book;
+import com.example.laba71.model.Loan;
 import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
 import com.example.laba71.service.BookService;
@@ -22,6 +24,27 @@ public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
+
+    @Override
+    public LocalDate findExpectedAvailableAt(Book book) {
+        return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
+                .map(Loan::getDueDate)
+                .orElse(null);
+        // или: return loanRepository.findEarliestDueDateByBook(book).orElse(null);
+    }
+    private boolean isAvailable(Book b) {
+        Integer ac = b.getAvailableCopies();
+        return ac != null && ac > 0;
+    }
+
+    private LocalDate etaIfNeeded(Book b) {
+        return isAvailable(b) ? null : findExpectedAvailableAt(b);
+    }
+
+    // пример сборки DTO
+    public BookListItemDto toListItem(Book book) {
+        return bookMapper.toListItemDto(book, etaIfNeeded(book));
+    }
 
     @Override
     public Page<BookListItemDto> search(String q, Integer year, Long categoryId, Pageable pageable) {

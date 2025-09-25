@@ -9,7 +9,15 @@ import java.time.LocalDate;
 
 @Component
 public class BookMapper {
+
     public BookListItemDto toListItemDto(Book book) {
+        return toListItemDto(book, null);
+    }
+
+
+    public BookListItemDto toListItemDto(Book book, LocalDate expectedAvailableAt) {
+        boolean available = book.getAvailableCopies() != null && book.getAvailableCopies() > 0;
+
         return BookListItemDto.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -17,8 +25,10 @@ public class BookMapper {
                 .imageUrl(book.getImageUrl())
                 .publicationYear(book.getPublicationYear())
                 .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
-                .available(book.getAvailableCopies() != null && book.getAvailableCopies() > 0)
-                .expectedAvailableAt(null) // можно будет подставить дату возврата ближайшего Loan
+                .available(available)
+                .totalCopies(book.getTotalCopies())
+                .availableCopies(book.getAvailableCopies())
+                .expectedAvailableAt(expectedAvailableAt)
                 .build();
     }
 
