@@ -24,15 +24,18 @@ public class Loan {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
+    @JoinColumn(name = "book_id")
     private Book book;
 
+    @Column(name="planned_start_date")
+    private LocalDate plannedStartDate;
+
     @NotNull
-    @Column(name = "borrow_date", nullable = false)
+    @Column(name = "borrow_date")
     private LocalDate borrowDate;
 
     @NotNull
@@ -49,7 +52,6 @@ public class Loan {
 
     @PrePersist
     void prePersist() {
-        if (borrowDate == null) borrowDate = LocalDate.now();
-        if (status == null)     status = LoanStatus.EXPECTED;
+        if (status == null) status = LoanStatus.EXPECTED;
     }
 }

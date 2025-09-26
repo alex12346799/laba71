@@ -39,7 +39,7 @@ public class MainController {
 
         Page<BookListItemDto> books = bookService.search(q, year, category, pageable);
 
-        model.addAttribute("currentUser", auth.getName());
+//        model.addAttribute("currentUser", auth.getName());
         model.addAttribute("pageDto", PageDto.from(books));
         model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentCategory", category);

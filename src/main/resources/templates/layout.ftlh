@@ -9,6 +9,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
         <style>
             body{background-color:#f7f7f9}
             .genre-sidebar{position:sticky;top:1rem}
@@ -35,12 +37,33 @@
         </style>
     </head>
     <body>
+    <#-- Достаём контекст безопасности -->
+    <#assign _auth         = (SPRING_SECURITY_CONTEXT.authentication)!>
+    <#assign _isAuth       = (_auth?? && _auth.principal?has_content && _auth.principal != 'anonymousUser')>
+    <#assign _authorities  = (_auth.authorities)![]>
+    <#assign _roleNames    = []>
+    <#list _authorities as a>
+        <#assign _roleNames = _roleNames + [(a.authority!'')?string]>
+    </#list>
+    <#assign _isReader = _roleNames?seq_contains('ROLE_READER')>
+    <#assign _isAdmin  = _roleNames?seq_contains('ROLE_ADMIN')>
+
+    <#-- Имя для отображения: сначала principal.name, иначе principal.username -->
+    <#assign _principal    = (_auth.principal)!>
+    <#assign _displayName  = (_principal.name)!((_principal.username)!'Пользователь')>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
         <div class="container">
             <a class="navbar-brand fw-semibold" href="/">Литература</a>
+
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="/profile/books">Мои книги</a></li>
+                <#-- Ссылку "Мои книги" показываем только авторизованным читателям (или всем авторизованным — по желанию) -->
+                <#if _isAuth>
+                    <li class="nav-item"><a class="nav-link" href="/auth/profile">Мои книги</a></li>
+                </#if>
+                <#if _isAdmin>
+                    <li class="nav-item"><a class="nav-link" href="/admin">Админка</a></li>
+                </#if>
             </ul>
 
             <form class="d-none d-lg-flex me-2 search-wrap" role="search" onsubmit="return false;">
@@ -51,16 +74,27 @@
             </form>
 
             <div class="d-flex gap-2">
-                <#if (currentUser)??>
-                    <span class="navbar-text me-2 small text-muted">${currentUser}</span>
-                    <a class="btn btn-outline-secondary" href="/logout">Выйти</a>
+                <#if _isAuth>
+                    <span class="navbar-text me-2 small text-muted">${_displayName}</span>
+
+                <#--
+                <#if _isAdmin>
+                    <a class="btn btn-outline-primary" href="/admin">Админка</a>
+                </#if>
+                -->
+
+                    <form method="post" action="/logout" class="m-0">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                        <button class="btn btn-outline-secondary">Выйти</button>
+                    </form>
                 <#else>
-                    <a class="btn btn-outline-secondary" href="/auth/login">Авторизация</a>
+                    <a class="btn btn-outline-secondary" href="/auth/login">Войти</a>
                     <a class="btn btn-primary" href="/auth/register">Регистрация</a>
                 </#if>
             </div>
         </div>
     </nav>
+
 
     <main class="container my-4">
         <#nested>

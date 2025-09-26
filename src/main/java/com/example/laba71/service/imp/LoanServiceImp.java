@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LoanServiceImp implements LoanService {
@@ -26,5 +28,25 @@ public class LoanServiceImp implements LoanService {
     @Override
     public List<Loan> findByUser(User user) {
         return loanRepository.findByUser(user);
+    }
+
+    @Override
+    public void handover(Long loanId, LocalDate when) {
+
+    }
+
+    @Override
+    public void markReturned(Long loanId, LocalDate when) {
+
+    }
+
+    @Override
+    public Optional<Loan> findActiveByBook(Long bookId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Loan> findExpectedByBook(Long bookId) {
+        return Optional.empty();
     }
 }

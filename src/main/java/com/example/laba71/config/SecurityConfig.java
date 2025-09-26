@@ -25,7 +25,6 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
-                        .logoutSuccessUrl("/auth/login?logout")
                         .permitAll()
                 )
                 .csrf(csrf -> csrf.
@@ -42,7 +41,9 @@ public class SecurityConfig {
                                 "/h2-console/**",
                                 "/api/books/search",
                                 "/logout",
-                                "auth/logout"
+                                "auth/logout",
+                                "favicon.ico",
+                                "favicon"
                         ).permitAll()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().authenticated()
