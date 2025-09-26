@@ -1,10 +1,14 @@
 package com.example.laba71.mapper;
 
+import com.example.laba71.dto.BookDto;
 import com.example.laba71.dto.BookListItemDto;
 import com.example.laba71.model.Book;
+import com.example.laba71.model.Loan;
+import com.example.laba71.model.LoanStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Component
@@ -44,4 +48,31 @@ public class BookMapper {
                 .expectedAvailableAt(expectedAvailableAt)
                 .build();
     }
+
+    public static BookDto toBookDto(Book book, List<Loan> loans) {
+        if (book == null) {
+            return null;
+        }
+
+
+        boolean isTaken = loans.stream()
+                .anyMatch(loan -> loan.getStatus() == LoanStatus.EXPECTED);
+
+
+        LocalDate expectedAvailableAt = isTaken ? loans.stream()
+                .filter(loan -> loan.getStatus() == LoanStatus.EXPECTED)
+                .map(Loan::getDueDate)
+                .min(LocalDate::compareTo)
+                .orElse(null) : null;
+
+        return BookDto.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .expectedAvailableAt(expectedAvailableAt) // null если свободна
+                .build();
+    }
+
+
+
 }

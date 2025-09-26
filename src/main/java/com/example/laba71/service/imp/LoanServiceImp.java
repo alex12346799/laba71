@@ -30,6 +30,13 @@ public class LoanServiceImp implements LoanService {
         return loanRepository.findByUser(user);
     }
 
+@Override
+public List<Loan> getLoansByBookId(Long bookId) {
+        return loanRepository.findByBookId(bookId); // предполагается, что есть метод в репозитории
+    }
+
+
+
     @Override
     public void handover(Long loanId, LocalDate when) {
 
@@ -50,3 +57,5 @@ public class LoanServiceImp implements LoanService {
         return Optional.empty();
     }
 }
+
+

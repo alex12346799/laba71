@@ -5,9 +5,6 @@ import com.example.laba71.dto.PageDto;
 import com.example.laba71.mapper.BookMapper;
 import com.example.laba71.model.Book;
 import com.example.laba71.model.Loan;
-import com.example.laba71.model.Book;
-import com.example.laba71.model.Loan;
-import com.example.laba71.model.LoanStatus;
 import com.example.laba71.model.User;
 import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
@@ -35,7 +32,7 @@ public class BookServiceImpl implements BookService {
         return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
                 .map(Loan::getDueDate)
                 .orElse(null);
-        // или: return loanRepository.findEarliestDueDateByBook(book).orElse(null);
+
     }
     private boolean isAvailable(Book b) {
         Integer ac = b.getAvailableCopies();
@@ -46,7 +43,7 @@ public class BookServiceImpl implements BookService {
         return isAvailable(b) ? null : findExpectedAvailableAt(b);
     }
 
-    // пример сборки DTO
+
     public BookListItemDto toListItem(Book book) {
         return bookMapper.toListItemDto(book, etaIfNeeded(book));
     }
@@ -129,19 +126,55 @@ public class BookServiceImpl implements BookService {
                     return bookMapper.toDto(book, expectedDate);
                 })
                 .toList();    }
+//
+//    @Override
+//    @Transactional
+//    public void borrowBook(Long bookId, User user) {
+//        Book book = bookRepository.findById(bookId).orElseThrow(()->new RuntimeException("Книга не найдена"));
+//        Loan loan = Loan.builder()
+//                .user(user)
+//                .book(book)
+//                .borrowDate(LocalDate.now())
+//                .dueDate(LocalDate.now().plusWeeks(2))
+//                .status(LoanStatus.EXPECTED)
+//                .build();
+//        loanRepository.save(loan);
+//
+//    }
+@Override
+public Book getBookById(Long id) {
+    return bookRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Книга не найдена"));
+}
+@Transactional
+@Override
+public void borrowBook(Long bookId, User user, LocalDate dueDate) {
+        Book book = getBookById(bookId);
 
-    @Override
-    @Transactional
-    public void borrowBook(Long bookId, User user) {
-        Book book = bookRepository.findById(bookId).orElseThrow(()->new RuntimeException("Книга не найдена"));
+        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
+            throw new IllegalStateException("Книга недоступна");
+        }
+
+        List<Loan> activeLoans = loanRepository.findByUserAndReturnedAtIsNull(user);
+        if (activeLoans.size() >= 3) {
+            throw new IllegalStateException("Нельзя взять более 3-х книг одновременно");
+        }
+
+
         Loan loan = Loan.builder()
                 .user(user)
                 .book(book)
                 .borrowDate(LocalDate.now())
-                .dueDate(LocalDate.now().plusWeeks(2))
-                .status(LoanStatus.EXPECTED)
+                .dueDate(dueDate)
                 .build();
+
         loanRepository.save(loan);
 
+
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        bookRepository.save(book);
     }
+
+
+
 }
