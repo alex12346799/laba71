@@ -6,6 +6,7 @@ import com.example.laba71.model.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.example.laba71.model.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,5 +24,11 @@ public interface BookService {
 
     List<BookListItemDto> getBookList();
 
-    void borrowBook(Long bookId, User user);
+//    void borrowBook(Long bookId, User user);
+
+
+    Book getBookById(Long id);
+
+    @Transactional
+    void borrowBook(Long bookId, User user, LocalDate dueDate);
 }

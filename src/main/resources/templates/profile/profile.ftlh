@@ -44,7 +44,6 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#-- Перебираем займы через profileDto.loans, null-safe -->
                 <#list profileDto.loans![] as loan>
                     <tr>
                         <td>${loan.title!""}</td>

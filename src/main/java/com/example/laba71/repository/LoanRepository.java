@@ -2,6 +2,7 @@ package com.example.laba71.repository;
 
 import com.example.laba71.model.Book;
 import com.example.laba71.model.Loan;
+import com.example.laba71.model.LoanStatus;
 import com.example.laba71.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +35,9 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
             "order by l.dueDate asc")
     Optional<LocalDate> findEarliestDueDateByBook(@Param("book") Book book);
 
+
+
+    List<Loan> findByUserAndReturnedAtIsNull(User user);
+
+    List<Loan> findByBookId(Long bookId);
 }

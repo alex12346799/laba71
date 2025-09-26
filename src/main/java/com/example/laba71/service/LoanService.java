@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface LoanService {
     List<Loan> findByUser(User user);
+
+    List<Loan> getLoansByBookId(Long bookId);
 }

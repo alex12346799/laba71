@@ -27,4 +27,13 @@ public class LoanServiceImp implements LoanService {
     public List<Loan> findByUser(User user) {
         return loanRepository.findByUser(user);
     }
+
+@Override
+public List<Loan> getLoansByBookId(Long bookId) {
+        return loanRepository.findByBookId(bookId); // предполагается, что есть метод в репозитории
+    }
+
+
 }
+
+

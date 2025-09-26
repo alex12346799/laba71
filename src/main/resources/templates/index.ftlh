@@ -61,13 +61,26 @@
                                     <h6 class="card-subtitle text-body-secondary mb-1">${book.author}</h6>
                                     <h5 class="card-title">«${book.title}»</h5>
                                 </div>
+
+
                                 <div class="card-footer bg-transparent border-0 mt-auto">
-                                    <div class="d-grid">
-                                        <button class="btn btn-outline-primary">
+                                    <form action="/books/${book.id}/borrow" method="post">
+                                        <#if _csrf??>
+                                            <input
+                                                    type="hidden"
+                                                    name="${(_csrf.parameterName)!'csrf-param-name'}"
+                                                    value="${(_csrf.token)!'csrf-token'}"/>
+                                        </#if>
+                                        <button type="submit" class="btn btn-outline-primary w-100 mt-2">
                                             <i class="bi bi-box-arrow-in-down"></i> Получить
                                         </button>
-                                    </div>
+                                    </form>
                                 </div>
+
+
+
+
+
                             </div>
                         </div>
                     </#list>
