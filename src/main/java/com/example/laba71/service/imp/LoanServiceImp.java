@@ -19,11 +19,11 @@ public class LoanServiceImp implements LoanService {
     private final LoanRepository loanRepository;
     private final LoanMapper loanMapper;
 
-    public LocalDate findExpectedAvailableAt(Book book) {
-        return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
-                .map(loanMapper::getDueDate)
-                .orElse(null);
-    }
+//    public LocalDate findExpectedAvailableAt(Book book) {
+//        return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
+//                .map(loanMapper::getDueDate)
+//                .orElse(null);
+//    }
 
     @Override
     public List<Loan> findByUser(User user) {
