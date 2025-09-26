@@ -153,7 +153,7 @@
                 <input
                         type="hidden"
                         name="${(_csrf.parameterName)!'csrf-param-name'}"
-                        value="${(_csrf.token)!'csrf-token'}"/>
+                        value="${(_csrf.token)!'csrf-token'}" />
             </#if>
             <div class="form-outline">
                 <label class="form-label" for="libraryCardNumber">Номер читательского билета</label>
@@ -171,7 +171,6 @@
             <a href="/auth/forgot-password" class="btn-outline-primary">Забыли пароль?</a>
     </div>
     </form>
-</div>
 </div>
 </body>
 

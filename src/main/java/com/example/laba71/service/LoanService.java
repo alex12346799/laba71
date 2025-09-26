@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public interface LoanService {
     List<Loan> findByUser(User user);
+
+    List<Loan> getLoansByBookId(Long bookId);
+
     void handover(Long loanId, LocalDate when);       // EXPECTED -> ACTIVE
     void markReturned(Long loanId, LocalDate when);   // ACTIVE -> RETURNED
     Optional<Loan> findActiveByBook(Long bookId);

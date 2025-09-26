@@ -53,7 +53,6 @@ public class User implements UserDetails {
     private Boolean enabled;
 
 
-//    @Enumerated(EnumType.STRING)
     @Column(name ="role_name", nullable = false, length = 30)
     private String roleName;
 

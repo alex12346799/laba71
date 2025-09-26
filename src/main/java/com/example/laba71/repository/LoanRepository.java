@@ -27,6 +27,11 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     Optional<LocalDate> findEarliestDueDateByBook(@Param("book") Book book);
 
 
+
+    List<Loan> findByUserAndReturnedAtIsNull(User user);
+
+    List<Loan> findByBookId(Long bookId);
+
     @Query("""
   select count(l) from Loan l
   where l.book.id = :bookId and l.returnedAt is null

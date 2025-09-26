@@ -45,7 +45,7 @@ public class UserServiceImp implements UserService {
             log.warn("Ошибка: паспорт {} уже существует в системе", registrationDto.getPassportNumber());
             return "Пользователь с таким номером паспорта уже существует!";
         }
-        if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
+        if (! registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
             log.warn("Ошибка: пароли не совпадают для паспорта {}", registrationDto.getPassportNumber());
             return "Пароли не совпадают!";
         }
@@ -82,8 +82,9 @@ public class UserServiceImp implements UserService {
     public User findByLibraryCardNumber(String libraryCardNumber) {
         return userRepository.findByLibraryCardNumber(libraryCardNumber).orElse(null);
     }
-@Override
-public ProfileDto getProfile(String libraryCardNumber, LocalDate startDate, LocalDate endDate) {
+
+    @Override
+    public ProfileDto getProfile(String libraryCardNumber, LocalDate startDate, LocalDate endDate) {
         User user = findByLibraryCardNumber(libraryCardNumber);
         if (user == null) return null;
 
@@ -109,8 +110,8 @@ public ProfileDto getProfile(String libraryCardNumber, LocalDate startDate, Loca
                         .build()
                 )
                 // Фильтруем по дате, если указано
-                .filter(loan -> (startDate == null || !loan.getBorrowDate().isBefore(startDate)) &&
-                        (endDate == null || !loan.getBorrowDate().isAfter(endDate)))
+                .filter(loan -> (startDate == null || ! loan.getBorrowDate().isBefore(startDate)) &&
+                        (endDate == null || ! loan.getBorrowDate().isAfter(endDate)))
                 .toList()
                 : List.of();
 

@@ -3,8 +3,10 @@ package com.example.laba71.service.imp;
 import com.example.laba71.dto.BookListItemDto;
 import com.example.laba71.dto.PageDto;
 import com.example.laba71.model.Book;
+import com.example.laba71.model.RequestStatus;
 import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
+import com.example.laba71.repository.LoanRequestRepository;
 import com.example.laba71.service.AdminBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -12,13 +14,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
 public class AdminBookServiceImpl implements AdminBookService {
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
+    private final LoanRequestRepository loanRequestRepository;
 
     @Override
     public PageDto<BookListItemDto> findBooks(String q, Integer year, Long categoryId,
@@ -31,14 +33,14 @@ public class AdminBookServiceImpl implements AdminBookService {
                 pageable
         );
 
-        var ids = p.getContent().stream().map(Book::getId).toList();
-        var busyIds = new HashSet<>(loanRepository.findBookIdsWithActiveLoans());
-
         var content = p.getContent().stream().map(b -> {
-            boolean available = !busyIds.contains(b.getId());
+            boolean available = b.getAvailableCopies() != null && b.getAvailableCopies() > 0;
             LocalDate eta = null;
             if (!available) {
-                eta = loanRepository.findEarliestDueDateForBook(b.getId()).orElse(null);
+                eta = loanRepository.findEarliestDueDateForBook(b.getId()).orElseGet(() ->
+                        loanRequestRepository.findEarliestRequestedDueDateForBook(b.getId(), RequestStatus.PENDING)
+                                .orElse(null)
+                );
             }
 
             return BookListItemDto.builder()

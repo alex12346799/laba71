@@ -31,6 +31,13 @@ public class LoanServiceImp implements LoanService {
     }
 
     @Override
+    public List<Loan> getLoansByBookId(Long bookId) {
+        return loanRepository.findByBookId(bookId); // предполагается, что есть метод в репозитории
+    }
+
+
+
+    @Override
     public void handover(Long loanId, LocalDate when) {
 
     }
