@@ -59,4 +59,10 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     Optional<Loan> findFirstByBookIdAndStatusOrderByPlannedStartDateDesc(Long bookId, LoanStatus status);
     boolean existsByUserIdAndStatusIn(Long userId, Collection<LoanStatus> statuses);
     long countByUserIdAndStatus( Long userId, LoanStatus status );
+
+
+    List<Loan> findByStatus(LoanStatus status);
+
+
+
 }

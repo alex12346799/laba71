@@ -17,4 +17,5 @@ public interface LoanService {
     Optional<Loan> findActiveByBook(Long bookId);
     Optional<Loan> findExpectedByBook(Long bookId);
 
+    void createLoan(Long bookId, User user, LocalDate dueDate);
 }

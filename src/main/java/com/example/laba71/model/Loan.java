@@ -50,6 +50,10 @@ public class Loan {
     @Column(name = "status", nullable = false, length = 20)
     private LoanStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "request_status", nullable = false)
+    private RequestStatus requestStatus;
+
     @PrePersist
     void prePersist() {
         if (status == null) status = LoanStatus.EXPECTED;

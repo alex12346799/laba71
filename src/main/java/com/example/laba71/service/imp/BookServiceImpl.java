@@ -10,6 +10,7 @@ import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
 import com.example.laba71.service.BookService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
@@ -146,35 +148,75 @@ public Book getBookById(Long id) {
     return bookRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Книга не найдена"));
 }
+//@Transactional
+//@Override
+//public void borrowBook(Long bookId, User user, LocalDate dueDate) {
+//        Book book = getBookById(bookId);
+//
+//        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
+//            throw new IllegalStateException("Книга недоступна");
+//        }
+//
+//        List<Loan> activeLoans = loanRepository.findByUserAndReturnedAtIsNull(user);
+//        if (activeLoans.size() >= 3) {
+//            throw new IllegalStateException("Нельзя взять более 3-х книг одновременно");
+//        }
+//
+//
+//        Loan loan = Loan.builder()
+//                .user(user)
+//                .book(book)
+//                .borrowDate(LocalDate.now())
+//                .dueDate(dueDate)
+//                .build();
+//
+//    log.error("Saving loan: user=" + user.getLibraryCardNumber() + ", book=" + book.getTitle() + ", dueDate=" + dueDate);
+//    loanRepository.save(loan);
+//    log.error("Loan saved with id: " + loan.getId());
+//
+//
+////    loanRepository.save(loan);
+//
+//
+//        book.setAvailableCopies(book.getAvailableCopies() - 1);
+//        bookRepository.save(book);
+//    }
+
 @Transactional
 @Override
 public void borrowBook(Long bookId, User user, LocalDate dueDate) {
-        Book book = getBookById(bookId);
+    Book book = getBookById(bookId);
 
-        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
-            throw new IllegalStateException("Книга недоступна");
-        }
-
-        List<Loan> activeLoans = loanRepository.findByUserAndReturnedAtIsNull(user);
-        if (activeLoans.size() >= 3) {
-            throw new IllegalStateException("Нельзя взять более 3-х книг одновременно");
-        }
-
-
-        Loan loan = Loan.builder()
-                .user(user)
-                .book(book)
-                .borrowDate(LocalDate.now())
-                .dueDate(dueDate)
-                .build();
-
-        loanRepository.save(loan);
-
-
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookRepository.save(book);
+    if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
+        throw new IllegalStateException("Книга недоступна");
     }
 
+    List<Loan> activeLoans = loanRepository.findByUserAndReturnedAtIsNull(user);
+    if (activeLoans.size() >= 3) {
+        throw new IllegalStateException("Нельзя взять более 3-х книг одновременно");
+    }
+
+    if (dueDate == null) {
+        dueDate = LocalDate.now().plusWeeks(2);
+    }
+
+    Loan loan = Loan.builder()
+            .user(user)
+            .book(book)
+            .borrowDate(LocalDate.now())
+            .dueDate(dueDate)
+            .build();
+
+    log.error("Saving loan: user={}, book={}, dueDate={}",
+            user.getLibraryCardNumber(), book.getTitle(), dueDate);
+
+    loanRepository.save(loan);
+
+    log.error("Loan saved with id={}", loan.getId());
+
+    book.setAvailableCopies(book.getAvailableCopies() - 1);
+    bookRepository.save(book);
+}
 
 
 }

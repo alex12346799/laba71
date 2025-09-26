@@ -6,6 +6,7 @@ import com.example.laba71.dto.PageDto;
 import com.example.laba71.mapper.LoanMapper;
 import com.example.laba71.model.Loan;
 import com.example.laba71.model.LoanStatus;
+import com.example.laba71.model.RequestStatus;
 import com.example.laba71.repository.LoanRepository;
 import com.example.laba71.service.AdminLoanService;
 import lombok.RequiredArgsConstructor;
@@ -84,4 +85,31 @@ public class AdminLoanServiceImpl implements AdminLoanService {
 
         return PageDto.of(content, page, size, total, totalPages, last);
     }
+
+
+    @Override
+    public List<LoanViewDto> getPendingLoans() {
+        return loanRepository.findByStatus(LoanStatus.EXPECTED)
+                .stream()
+                .map(loanMapper::toViewDto)
+                .toList();
+    }
+
+@Transactional
+@Override
+public void markApproved(Long loanId) {
+        Loan loan = loanRepository.findById(loanId).orElseThrow();
+        loan.setRequestStatus(RequestStatus.APPROVED);
+        loanRepository.save(loan);
+    }
+@Transactional
+@Override
+public void markRejected(Long loanId) {
+        Loan loan = loanRepository.findById(loanId).orElseThrow();
+        loan.setRequestStatus(RequestStatus.DECLINED);
+        loanRepository.save(loan);
+    }
+
+
+
 }

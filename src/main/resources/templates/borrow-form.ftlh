@@ -23,7 +23,10 @@
 
         <form action="/books/${bookDto.id}/borrow" method="post">
             <#if _csrf??>
-                <input type="hidden" name="${(_csrf.parameterName)!}" value="${(_csrf.token)!}"/>
+                <input
+                        type="hidden"
+                        name="${(_csrf.parameterName)!'csrf-param-name'}"
+                        value="${(_csrf.token)!'csrf-token'}"/>
             </#if>
 
             <div class="text-center mb-3">
@@ -36,10 +39,10 @@
                 </#if>
             </div>
 
-            <div class="mb-4">
-                <label for="returnDate" class="form-label">Дата возврата</label>
-                <input type="date" class="form-control" id="returnDate" name="dueDate" required>
-            </div>
+            <label for="dueDate">Дата возврата</label>
+            <input type="date" id="dueDate" name="dueDate"
+                   value="${loanRequestDto.dueDate!}" required/>
+
 
             <button type="submit" class="btn btn-primary w-100">Подать заявку</button>
         </form>

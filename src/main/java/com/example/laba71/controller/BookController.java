@@ -11,6 +11,7 @@ import com.example.laba71.service.LoanService;
 import com.example.laba71.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.security.Principal;
 import java.util.List;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class BookController {
@@ -40,14 +42,14 @@ public class BookController {
 //    }
 
 
-    @GetMapping("/books/{id}/borrow-form")
+    @GetMapping("/books/{id}/borrow")
     public String showBorrowForm(@PathVariable Long id, Model model, Authentication authentication) {
         Book book = bookService.getBookById(id);
         List<Loan> loans = loanService.getLoansByBookId(id);
 
         BookDto bookDto = BookMapper.toBookDto(book, loans);
         model.addAttribute("bookDto", bookDto);
-//        model.addAttribute("loanRequestDto", new LoanRequestDto());
+        model.addAttribute("loanRequestDto", new LoanRequestDto());
 
         model.addAttribute("libraryCardNumber", authentication.getName());
         return "borrow-form";
@@ -59,7 +61,8 @@ public class BookController {
                                    BindingResult bindingResult,
                                    Model model,
                                    Authentication authentication) {
-
+        log.error("we are in controller!!!!");
+        log.error("authentication: " + authentication.getName());
         Book book = bookService.getBookById(id);
         List<Loan> loans = loanService.getLoansByBookId(id);
 
