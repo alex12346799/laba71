@@ -6,6 +6,7 @@ import com.example.laba71.dto.PageDto;
 import com.example.laba71.mapper.LoanMapper;
 import com.example.laba71.model.Loan;
 import com.example.laba71.model.LoanStatus;
+import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
 import com.example.laba71.service.AdminLoanService;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminLoanServiceImpl implements AdminLoanService {
     private final LoanRepository loanRepository;
+    private final BookRepository bookRepository;
     private final LoanMapper loanMapper;
-
 
     @Transactional
     public void markReturned(Long loanId, LocalDate returnedAt) {
-        Loan l = loanRepository.findById(loanId).orElseThrow();
-        l.setReturnedAt(returnedAt);
-        l.setStatus(LoanStatus.RETURNED);
-        loanRepository.save(l);
-    }
+        Loan loan = loanRepository.findById(loanId).orElseThrow();
+        LocalDate effectiveReturnDate = returnedAt != null ? returnedAt : LocalDate.now();
+        loan.setReturnedAt(effectiveReturnDate);
+        loan.setStatus(LoanStatus.RETURNED);
 
+        if (loan.getBook() != null) {
+            var book = loan.getBook();
+            int copies = book.getAvailableCopies() == null ? 0 : book.getAvailableCopies();
+            book.setAvailableCopies(copies + 1);
+            bookRepository.save(book);
+        }
+
+        loanRepository.save(loan);
+    }
 
     @Override
     public PageDto<LoanViewDto> search(LoanSearchFilterDto f) {

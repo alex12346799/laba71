@@ -3,8 +3,10 @@ package com.example.laba71.service.imp;
 import com.example.laba71.dto.BookListItemDto;
 import com.example.laba71.dto.PageDto;
 import com.example.laba71.model.Book;
+import com.example.laba71.model.RequestStatus;
 import com.example.laba71.repository.BookRepository;
 import com.example.laba71.repository.LoanRepository;
+import com.example.laba71.repository.LoanRequestRepository;
 import com.example.laba71.service.AdminBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -12,54 +14,59 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
 public class AdminBookServiceImpl implements AdminBookService {
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
+    private final LoanRequestRepository loanRequestRepository;
 
     @Override
     public PageDto<BookListItemDto> findBooks(String q, Integer year, Long categoryId,
                                               int page, int size) {
         var pageable = PageRequest.of(page, size, Sort.by("title").ascending());
-        var p = bookRepository.findPageFiltered(
+        var pageData = bookRepository.findPageFiltered(
                 categoryId,
                 (q == null || q.isBlank()) ? null : q.trim(),
                 year,
                 pageable
         );
 
-        var ids = p.getContent().stream().map(Book::getId).toList();
-        var busyIds = new HashSet<>(loanRepository.findBookIdsWithActiveLoans());
+        var content = pageData.getContent().stream().map(book -> {
+            boolean hasCopies = book.getAvailableCopies() != null && book.getAvailableCopies() > 0;
+            boolean hasPending = loanRequestRepository.existsByBookIdAndStatus(book.getId(), RequestStatus.PENDING);
+            boolean available = hasCopies && !hasPending;
 
-        var content = p.getContent().stream().map(b -> {
-            boolean available = !busyIds.contains(b.getId());
             LocalDate eta = null;
             if (!available) {
-                eta = loanRepository.findEarliestDueDateForBook(b.getId()).orElse(null);
+                eta = loanRepository.findEarliestDueDateForBook(book.getId()).orElseGet(() ->
+                        loanRequestRepository.findEarliestRequestedDueDateForBook(book.getId(), RequestStatus.PENDING)
+                                .orElse(null)
+                );
             }
 
             return BookListItemDto.builder()
-                    .id(b.getId())
-                    .title(b.getTitle())
-                    .author(b.getAuthor())
-                    .imageUrl(b.getImageUrl())
-                    .categoryName(b.getCategory() != null ? b.getCategory().getName() : null)
-                    .publicationYear(b.getPublicationYear())
+                    .id(book.getId())
+                    .title(book.getTitle())
+                    .author(book.getAuthor())
+                    .imageUrl(book.getImageUrl())
+                    .categoryName(book.getCategory() != null ? book.getCategory().getName() : null)
+                    .publicationYear(book.getPublicationYear())
                     .available(available)
                     .expectedAvailableAt(eta)
+                    .availableCopies(book.getAvailableCopies())
+                    .totalCopies(book.getTotalCopies())
                     .build();
         }).toList();
 
         return PageDto.<BookListItemDto>builder()
                 .content(content)
-                .page(p.getNumber())
-                .size(p.getSize())
-                .totalElements(p.getTotalElements())
-                .totalPages(p.getTotalPages())
-                .last(p.isLast())
+                .page(pageData.getNumber())
+                .size(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .totalPages(pageData.getTotalPages())
+                .last(pageData.isLast())
                 .build();
     }
 }
