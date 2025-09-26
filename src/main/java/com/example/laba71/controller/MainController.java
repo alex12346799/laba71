@@ -1,6 +1,7 @@
 package com.example.laba71.controller;
 
 import com.example.laba71.dto.BookListItemDto;
+import com.example.laba71.dto.LoanRequestDto;
 import com.example.laba71.dto.PageDto;
 import com.example.laba71.service.BookService;
 import com.example.laba71.service.CategoryService;
@@ -20,7 +21,7 @@ public class MainController {
     private final BookService bookService;
     private final CategoryService categoryService;
 
-    @GetMapping
+    @GetMapping("/")
     public String index(
             @RequestParam(required = false) Long category,
             @RequestParam(required = false) String q,
@@ -31,22 +32,29 @@ public class MainController {
             Model model,
             Authentication auth
     ) {
+
         var pageable = switch (sort) {
-            case "yearAsc"  -> PageRequest.of(page, size, Sort.by("publicationYear").ascending().and(Sort.by("title").ascending()));
+            case "yearAsc" -> PageRequest.of(page, size, Sort.by("publicationYear").ascending().and(Sort.by("title").ascending()));
             case "yearDesc" -> PageRequest.of(page, size, Sort.by("publicationYear").descending().and(Sort.by("title").ascending()));
-            default         -> PageRequest.of(page, size, Sort.by("title").ascending());
+            default -> PageRequest.of(page, size, Sort.by("title").ascending());
         };
 
         Page<BookListItemDto> books = bookService.search(q, year, category, pageable);
 
-//        model.addAttribute("currentUser", auth.getName());
         model.addAttribute("pageDto", PageDto.from(books));
         model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentCategory", category);
         model.addAttribute("q", q);
         model.addAttribute("year", year);
         model.addAttribute("sort", sort);
+        model.addAttribute("authenticatedCard", auth != null ? auth.getName() : null);
+        if (!model.containsAttribute("loanRequestDto")) {
+            model.addAttribute("loanRequestDto", new LoanRequestDto());
+        }
+
 
         return "index";
     }
+
+
 }

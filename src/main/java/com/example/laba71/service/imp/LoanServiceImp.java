@@ -19,19 +19,19 @@ public class LoanServiceImp implements LoanService {
     private final LoanRepository loanRepository;
     private final LoanMapper loanMapper;
 
-    public LocalDate findExpectedAvailableAt(Book book) {
-        return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
-                .map(loanMapper::getDueDate)
-                .orElse(null);
-    }
+//    public LocalDate findExpectedAvailableAt(Book book) {
+//        return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
+//                .map(loanMapper::getDueDate)
+//                .orElse(null);
+//    }
 
     @Override
     public List<Loan> findByUser(User user) {
         return loanRepository.findByUser(user);
     }
 
-    @Override
-    public List<Loan> getLoansByBookId(Long bookId) {
+@Override
+public List<Loan> getLoansByBookId(Long bookId) {
         return loanRepository.findByBookId(bookId); // предполагается, что есть метод в репозитории
     }
 
@@ -57,3 +57,5 @@ public class LoanServiceImp implements LoanService {
         return Optional.empty();
     }
 }
+
+

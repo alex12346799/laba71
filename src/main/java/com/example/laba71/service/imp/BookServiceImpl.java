@@ -34,27 +34,45 @@ public class BookServiceImpl implements BookService {
     public LocalDate findExpectedAvailableAt(Book book) {
         return loanRepository.findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(book)
                 .map(Loan::getDueDate)
-                .orElse(null);
-
+                .orElseGet(() -> loanRequestRepository
+                        .findEarliestRequestedDueDateForBook(book.getId(), RequestStatus.PENDING)
+                        .orElse(null));
     }
 
-    private boolean isAvailable(Book b) {
-        Integer ac = b.getAvailableCopies();
-        return ac != null && ac > 0;
+    private boolean hasPendingRequest(Book book) {
+        return loanRequestRepository.existsByBookIdAndStatus(book.getId(), RequestStatus.PENDING);
     }
 
-    private LocalDate etaIfNeeded(Book b) {
-        return isAvailable(b) ? null : findExpectedAvailableAt(b);
+    private boolean isAvailable(Book book) {
+        Integer copies = book.getAvailableCopies();
+        boolean hasCopies = copies != null && copies > 0;
+        return hasCopies && !hasPendingRequest(book);
     }
 
-    public BookListItemDto toListItem(Book book) {
-        return bookMapper.toListItemDto(book, etaIfNeeded(book));
+    private BookListItemDto buildListItem(Book book) {
+        LocalDate eta = isAvailable(book) ? null : findExpectedAvailableAt(book);
+        BookListItemDto dto = bookMapper.toListItemDto(book, eta);
+        dto.setAvailable(isAvailable(book));
+        dto.setAvailableCopies(book.getAvailableCopies());
+        dto.setTotalCopies(book.getTotalCopies());
+        dto.setExpectedAvailableAt(eta);
+        return dto;
+    }
+
+    private BookListItemDto buildCardDto(Book book) {
+        LocalDate eta = isAvailable(book) ? null : findExpectedAvailableAt(book);
+        BookListItemDto dto = bookMapper.toDto(book, eta);
+        dto.setAvailable(isAvailable(book));
+        dto.setAvailableCopies(book.getAvailableCopies());
+        dto.setTotalCopies(book.getTotalCopies());
+        dto.setExpectedAvailableAt(eta);
+        return dto;
     }
 
     @Override
     public Page<BookListItemDto> search(String q, Integer year, Long categoryId, Pageable pageable) {
-        var page = bookRepository.search((q == null || q.isBlank()) ? null : q.trim(), year, categoryId, pageable);
-        return page.map(this::toListItem);
+        Page<Book> page = bookRepository.search((q == null || q.isBlank()) ? null : q.trim(), year, categoryId, pageable);
+        return page.map(this::buildListItem);
     }
 
     @Override
@@ -63,7 +81,7 @@ public class BookServiceImpl implements BookService {
         var pageData = bookRepository.findPageWithCategory(categoryId, pageable);
 
         var content = pageData.getContent().stream()
-                .map(book -> bookMapper.toDto(book, isAvailable(book) ? null : findExpectedAvailableAt(book)))
+                .map(this::buildCardDto)
                 .toList();
 
         return PageDto.<BookListItemDto>builder()
@@ -77,23 +95,21 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public PageDto<BookListItemDto> getBookPage(
-            Integer page, Integer size, Long categoryId,
-            String q, Integer year, String sort) {
-
-        Sort s = switch (sort == null ? "" : sort) {
+    public PageDto<BookListItemDto> getBookPage(Integer page, Integer size, Long categoryId,
+                                                String q, Integer year, String sort) {
+        Sort sortOption = switch (sort == null ? "" : sort) {
             case "yearAsc" -> Sort.by(Sort.Direction.ASC, "publicationYear").and(Sort.by("title").ascending());
             case "yearDesc" -> Sort.by(Sort.Direction.DESC, "publicationYear").and(Sort.by("title").ascending());
             default -> Sort.by("title").ascending();
         };
 
-        var pageable = PageRequest.of(page, size, s);
+        var pageable = PageRequest.of(page, size, sortOption);
         var pageData = bookRepository.findPageFiltered(categoryId,
                 (q == null || q.isBlank()) ? null : q.trim(),
                 year, pageable);
 
         var content = pageData.getContent().stream()
-                .map(book -> bookMapper.toDto(book, isAvailable(book) ? null : findExpectedAvailableAt(book)))
+                .map(this::buildCardDto)
                 .toList();
 
         return PageDto.<BookListItemDto>builder()
@@ -109,26 +125,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookListItemDto> getBookList() {
         return bookRepository.findAllWithCategory().stream()
-                .map(book -> bookMapper.toDto(book, isAvailable(book) ? null : findExpectedAvailableAt(book)))
+                .map(this::buildCardDto)
                 .toList();
     }
 
-    //
-    // @Override
-    // @Transactional
-    // public void borrowBook(Long bookId, User user) {
-    // Book book = bookRepository.findById(bookId).orElseThrow(()->new
-    // RuntimeException("ÐšÐ½Ð¸Ð³Ð° Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°"));
-    // Loan loan = Loan.builder()
-    // .user(user)
-    // .book(book)
-    // .borrowDate(LocalDate.now())
-    // .dueDate(LocalDate.now().plusWeeks(2))
-    // .status(LoanStatus.EXPECTED)
-    // .build();
-    // loanRepository.save(loan);
-    //
-    // }
     @Override
     public Book getBookById(Long id) {
         return bookRepository.findById(id)
@@ -139,14 +139,13 @@ public class BookServiceImpl implements BookService {
     @Override
     public void borrowBook(Long bookId, User user, LocalDate dueDate) {
         Book book = getBookById(bookId);
-
-        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
+        if (!isAvailable(book)) {
             throw new IllegalStateException("Книга недоступна");
         }
 
         List<Loan> activeLoans = loanRepository.findByUserAndReturnedAtIsNull(user);
         if (activeLoans.size() >= 3) {
-            throw new IllegalStateException("Нельзя взять более 3-х книг одновременно");
+            throw new IllegalStateException("У читателя уже есть три активных книги");
         }
 
         Loan loan = Loan.builder()
@@ -158,8 +157,8 @@ public class BookServiceImpl implements BookService {
 
         loanRepository.save(loan);
 
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        Integer copies = book.getAvailableCopies();
+        book.setAvailableCopies(copies == null ? 0 : Math.max(0, copies - 1));
         bookRepository.save(book);
     }
-
 }

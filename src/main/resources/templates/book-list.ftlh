@@ -56,17 +56,17 @@
         <#else>
 
 
-            <div class="mb-3">
-                <label for="readerCard" class="form-label">Читательский билет</label>
-                <!-- Подставляем номер читательского билета и делаем поле readonly -->
-                <input type="text" class="form-control" id="readerCard" name="libraryCardNumber"
-                       value="${libraryCardNumber}" readonly>
-            </div>
-            <div class="mb-4">
-                <label for="returnDate" class="form-label">Дата возврата</label>
-                <input type="date" class="form-control" id="returnDate" name="returnDate" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Получить</button>
+                <div class="mb-3">
+                    <label for="readerCard" class="form-label">Читательский билет</label>
+                    <!-- Подставляем номер читательского билета и делаем поле readonly -->
+                    <input type="text" class="form-control" id="readerCard" name="libraryCardNumber"
+                           value="${libraryCardNumber}" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="returnDate" class="form-label">Дата возврата</label>
+                    <input type="date" class="form-control" id="returnDate" name="returnDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Получить</button>
 
         </#if>
     </div>

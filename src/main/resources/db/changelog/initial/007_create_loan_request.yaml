@@ -1,4 +1,4 @@
-databaseChangeLog:
+﻿databaseChangeLog:
   - changeSet:
       id: 007-create-loan-request
       author: codex

@@ -1,5 +1,4 @@
 package com.example.laba71.dto.admin;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

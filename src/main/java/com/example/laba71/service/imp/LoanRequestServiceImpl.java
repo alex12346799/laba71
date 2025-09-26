@@ -38,28 +38,35 @@ public class LoanRequestServiceImpl implements LoanRequestService {
         if (dueDate == null || dueDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Укажите корректную дату возврата");
         }
+
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Книга не найдена"));
 
-        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
-            throw new IllegalStateException("Книга сейчас недоступна для выдачи");
+        if (loanRequestRepository.existsByBookIdAndStatus(bookId, RequestStatus.PENDING)) {
+            throw new IllegalStateException("По этой книге уже есть ожидающая рассмотрения заявка");
         }
 
-        User user = userRepository.findByLibraryCardNumber(libraryCardNumber)
+        Integer availableCopies = book.getAvailableCopies();
+        if (availableCopies == null || availableCopies <= 0) {
+            throw new IllegalStateException("Сейчас нет свободных экземпляров этой книги");
+        }
+
+        String trimmedCard = libraryCardNumber == null ? "" : libraryCardNumber.trim();
+        if (trimmedCard.isBlank()) {
+            throw new IllegalArgumentException("Введите номер читательского билета");
+        }
+
+        User user = userRepository.findByLibraryCardNumber(trimmedCard)
                 .orElseThrow(() -> new IllegalArgumentException("Читательский билет не найден"));
 
         long activeLoans = loanRepository.countByUserIdAndStatus(user.getId(), LoanStatus.EXPECTED)
                 + loanRepository.countByUserIdAndStatus(user.getId(), LoanStatus.OVERDUE);
         long pendingRequests = loanRequestRepository.countByUserIdAndStatus(user.getId(), RequestStatus.PENDING);
         if (activeLoans + pendingRequests >= 3) {
-            throw new IllegalStateException("У читателя уже есть 3 активные книги или заявки");
+            throw new IllegalStateException("У читателя уже есть три активные книги или заявки");
         }
 
-        if (loanRequestRepository.existsByBookIdAndStatus(bookId, RequestStatus.PENDING)) {
-            throw new IllegalStateException("По этой книге уже есть ожидающая заявка");
-        }
-
-        book.setAvailableCopies(Math.max(0, book.getAvailableCopies() - 1));
+        book.setAvailableCopies(Math.max(0, availableCopies - 1));
         bookRepository.save(book);
 
         LoanRequest request = new LoanRequest();
@@ -92,7 +99,7 @@ public class LoanRequestServiceImpl implements LoanRequestService {
         long activeLoans = loanRepository.countByUserIdAndStatus(user.getId(), LoanStatus.EXPECTED)
                 + loanRepository.countByUserIdAndStatus(user.getId(), LoanStatus.OVERDUE);
         if (activeLoans >= 3) {
-            throw new IllegalStateException("У читателя уже есть 3 активные книги");
+            throw new IllegalStateException("У читателя уже есть три активные книги");
         }
 
         Loan loan = Loan.builder()
@@ -116,7 +123,8 @@ public class LoanRequestServiceImpl implements LoanRequestService {
 
         Book book = request.getBook();
         if (book != null) {
-            book.setAvailableCopies(book.getAvailableCopies() + 1);
+            Integer copies = book.getAvailableCopies();
+            book.setAvailableCopies(copies == null ? 1 : copies + 1);
             bookRepository.save(book);
         }
 
@@ -141,8 +149,7 @@ public class LoanRequestServiceImpl implements LoanRequestService {
     }
 
     private String buildUserName(User user) {
-        return Arrays.asList(user.getSurname(), user.getName(), user.getPatronymic())
-                .stream()
+        return Arrays.stream(new String[]{user.getSurname(), user.getName(), user.getPatronymic()})
                 .filter(part -> part != null && !part.isBlank())
                 .reduce((left, right) -> left + " " + right)
                 .orElse(user.getName());

@@ -48,9 +48,9 @@ public class SecurityConfig {
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex
-                        .accessDeniedPage("/error")
-                );
+                        .exceptionHandling(ex -> ex
+                                .accessDeniedPage("/error")
+                        );
 
         return http.build();
     }

@@ -168,9 +168,10 @@
             <button type="submit" class="btn btn-primary">Войти</button>
 
             <div class="text-center mt-3"></div>
-            <a href="/auth/forgot-password" class="btn-outline-primary">Забыли пароль?</a>
+            <a href="/auth/register" class="btn-outline-primary">Зарегистрироваться</a>
+        </form>
+
     </div>
-    </form>
 </div>
 </body>
 
