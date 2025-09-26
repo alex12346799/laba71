@@ -9,23 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.nio.channels.FileChannel;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
-    @Query("""
-           select min(l.dueDate)
-           from Loan l
-           where l.book.id = :bookId
-             and l.returnedAt is null
-             and l.status in (com.example.laba71.model.LoanStatus.EXPECTED, 
-                              com.example.laba71.model.LoanStatus.OVERDUE)
-           """)
-    Optional<LocalDate> findEarliestDueDateForBook(@Param("bookId") Long bookId);
     List<Loan> findByUser(User user);
 
     Optional<Loan> findTopByBookAndReturnedAtIsNullOrderByDueDateAsc(Book book);
@@ -40,4 +31,32 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     List<Loan> findByUserAndReturnedAtIsNull(User user);
 
     List<Loan> findByBookId(Long bookId);
+
+    @Query("""
+  select count(l) from Loan l
+  where l.book.id = :bookId and l.returnedAt is null
+""")
+    long countActiveByBookId(@Param("bookId") Long bookId);
+
+
+    @Query("""
+       select distinct l.book.id
+       from Loan l
+       where l.returnedAt is null
+       """)
+    List<Long> findBookIdsWithActiveLoans();
+
+    @Query("""
+       select min(l.dueDate)
+       from Loan l
+       where l.book.id = :bookId
+         and l.returnedAt is null
+       """)
+    Optional<LocalDate> findEarliestDueDateForBook(@Param("bookId") Long bookId);
+
+
+    Optional<Loan> findFirstByBookIdAndStatusOrderByDueDateDesc(Long bookId, LoanStatus status);   // активная
+    Optional<Loan> findFirstByBookIdAndStatusOrderByPlannedStartDateDesc(Long bookId, LoanStatus status);
+    boolean existsByUserIdAndStatusIn(Long userId, Collection<LoanStatus> statuses);
+    long countByUserIdAndStatus( Long userId, LoanStatus status );
 }

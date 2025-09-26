@@ -25,10 +25,12 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
-                        .logoutSuccessUrl("/auth/login?logout")
                         .permitAll()
                 )
+                .csrf(csrf -> csrf.
+                        ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/", "/error",
                                 "/auth/login", "/auth/register",
@@ -37,7 +39,11 @@ public class SecurityConfig {
                                 "/static/**", "/assets/**",
                                 "/css/**","/js/**","/img/**","/webjars/**",
                                 "/h2-console/**",
-                                "/api/books/search"
+                                "/api/books/search",
+                                "/logout",
+                                "auth/logout",
+                                "favicon.ico",
+                                "favicon"
                         ).permitAll()
                         .requestMatchers("/profile/**").authenticated()
                         .anyRequest().authenticated()
